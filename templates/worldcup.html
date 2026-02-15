@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Music Worldcup</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  font-family: Pretendard, Arial, sans-serif;
+}
+
+/* 진행 표시 */
+.progress-fixed {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  font-size: 18px;
+  font-weight: 700;
+  background: rgba(255,255,255,0.9);
+  padding: 8px 16px;
+  border-radius: 999px;
+}
+
+/* 레이아웃 */
+.battle {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.side {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 24px 96px;
+  box-sizing: border-box;
+  transition: transform 0.45s ease, opacity 0.35s ease;
+}
+
+.left  { background: #111; color: #fff; }
+.right { background: #0c0c0c; color: #fff; }
+
+.side.expand {
+  position: relative;
+  z-index: 10;
+}
+
+.side.expand.left {
+  transform: scale(2) translateX(25%);
+}
+
+.side.expand.right {
+  transform: scale(2) translateX(-25%);
+}
+
+.side.fade {
+  opacity: 0;
+}
+
+.title {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player {
+  flex: 1;
+  background: #000;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.player iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.pickBtn {
+  margin-top: 16px;
+  align-self: center;
+  font-size: 17px;
+  padding: 16px 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div id="progressText" class="progress-fixed">로딩 중…</div>
+
+<div class="battle">
+  <div class="side left" id="leftSide">
+    <div class="title" id="lt"></div>
+    <div class="player" id="leftPlayer"></div>
+    <button class="pickBtn" id="pickLeft">선택</button>
+  </div>
+
+  <div class="side right" id="rightSide">
+    <div class="title" id="rt"></div>
+    <div class="player" id="rightPlayer"></div>
+    <button class="pickBtn" id="pickRight">선택</button>
+  </div>
+</div>
+
+<script id="data" type="application/json">
+{{ videos | tojson }}
+</script>
+
+<script>
+let list = JSON.parse(document.getElementById("data").textContent) || [];
+if (list.length % 2 === 1) list.pop();
+
+let cur = list;
+let next = [];
+let idx = 0;
+
+function render() {
+  if (cur.length < 2) return;
+
+  const leftSide = document.getElementById("leftSide");
+  const rightSide = document.getElementById("rightSide");
+  leftSide.className = "side left";
+  rightSide.className = "side right";
+
+  const total = cur.length / 2;
+  const now = Math.floor(idx / 2) + 1;
+
+  document.getElementById("progressText").textContent =
+    `${cur.length}강 · ${now} / ${total}`;
+
+  const a = cur[idx];
+  const b = cur[idx + 1];
+
+  document.getElementById("lt").textContent = a.title;
+  document.getElementById("rt").textContent = b.title;
+
+  document.getElementById("leftPlayer").innerHTML =
+    `<iframe src="https://www.youtube.com/embed/${a.id}?autoplay=0"></iframe>`;
+  document.getElementById("rightPlayer").innerHTML =
+    `<iframe src="https://www.youtube.com/embed/${b.id}?autoplay=0"></iframe>`;
+
+  document.getElementById("pickLeft").onclick =
+    () => choose(a, "left");
+  document.getElementById("pickRight").onclick =
+    () => choose(b, "right");
+}
+
+function choose(winner, side) {
+  const left = document.getElementById("leftSide");
+  const right = document.getElementById("rightSide");
+
+  if (side === "left") {
+    left.classList.add("expand", "left");
+    right.classList.add("fade");
+  } else {
+    right.classList.add("expand", "right");
+    left.classList.add("fade");
+  }
+
+  next.push(winner);
+  idx += 2;
+
+  // ⏱ 0.45초(확대) + 약 1초 유지
+  setTimeout(() => {
+    if (idx >= cur.length) {
+      if (next.length === 1) {
+        showWinner(next[0]);
+        return;
+      }
+      cur = shuffle(next);
+      if (cur.length % 2 === 1) cur.pop();
+      next = [];
+      idx = 0;
+    }
+    render();
+  }, 1400);
+}
+
+function showWinner(w) {
+  document.body.innerHTML = `
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;">
+      <div style="text-align:center">
+        <h1>🏆 우승</h1>
+        <h2>${w.title}</h2>
+        <iframe width="720" height="405"
+          src="https://www.youtube.com/embed/${w.id}?autoplay=1"></iframe>
+      </div>
+    </div>
+  `;
+}
+
+function shuffle(arr) {
+  arr = [...arr];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+document.addEventListener("DOMContentLoaded", render);
+</script>
+
+</body>
+</html>

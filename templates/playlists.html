@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>월드컵 선택</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #0b0b0b;
+  font-family: Pretendard, Arial, sans-serif;
+  color: #fff;
+}
+
+.header {
+  padding: 32px 40px 16px;
+}
+.header h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+/* ===== 스크롤 영역 ===== */
+.scroll-wrap {
+  height: calc(100% - 80px);
+}
+
+.scroll {
+  display: flex;
+  gap: 28px;
+  padding: 20px 40px 120px;
+  overflow-x: auto;
+  cursor: grab;
+  user-select: none;
+}
+.scroll::-webkit-scrollbar { display: none; }
+.scroll.dragging { cursor: grabbing; }
+
+/* 카드 */
+.card {
+  flex: 0 0 320px;
+  height: 60vh;
+  background: #141414;
+  border-radius: 26px;
+  padding: 18px;
+  box-sizing: border-box;
+}
+a.card { text-decoration: none; color: inherit; }
+
+.thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.thumb.grid4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2px;
+}
+.thumb.grid4 img,
+.thumb.grid4 div {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  object-fit: cover;
+}
+
+.like-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ff3b3b, #ff7a7a);
+}
+.like-thumb span { font-size: 72px; }
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== 드래그바 ===== */
+.drag-track {
+  position: fixed;
+  left: 24px;
+  right: 24px;
+  bottom: 20px;
+  height: 6px;
+  background: rgba(255,255,255,.15);
+  border-radius: 999px;
+}
+.drag-thumb {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 80px;
+  background: rgba(255,255,255,.85);
+  border-radius: 999px;
+  pointer-events: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>월드컵 선택</h1>
+</div>
+
+<div class="scroll-wrap">
+  <div class="scroll" id="scrollArea">
+
+    <a class="card" href="/prepare/liked">
+      <div class="thumb like-thumb"><span>❤️</span></div>
+      <div class="title">좋아요 표시한 음악</div>
+    </a>
+
+    {% for p in playlists %}
+    <a class="card" href="/prepare/playlist/{{ p.id }}">
+      <div class="thumb grid4">
+        {% for img in p.preview %}
+          <img src="{{ img }}">
+        {% endfor %}
+        {% for _ in range(4 - p.preview|length) %}
+          <div></div>
+        {% endfor %}
+      </div>
+      <div class="title">{{ p.snippet.title }}</div>
+    </a>
+    {% endfor %}
+
+  </div>
+</div>
+
+<div class="drag-track">
+  <div class="drag-thumb" id="dragThumb"></div>
+</div>
+
+<script>
+const scroll = document.getElementById("scrollArea");
+const thumb  = document.getElementById("dragThumb");
+const track  = thumb.parentElement;
+
+let dragging = false;
+let lastX = 0;
+let moved = false;
+
+/* ===== 드래그 시작 ===== */
+scroll.addEventListener("mousedown", e => {
+  dragging = true;
+  moved = false;
+  scroll.classList.add("dragging");
+  lastX = e.pageX;
+});
+
+/* ===== 드래그 이동 (진짜 핵심) ===== */
+document.addEventListener("mousemove", e => {
+  if (!dragging) return;
+
+  const dx = e.pageX - lastX;
+  if (Math.abs(dx) > 2) moved = true;
+
+  // 👉 이동한 만큼 그대로 스크롤
+  scroll.scrollLeft -= dx;
+
+  lastX = e.pageX;
+  syncThumb(); // 즉시 동기화
+});
+
+/* ===== 드래그 종료 ===== */
+document.addEventListener("mouseup", () => {
+  dragging = false;
+  scroll.classList.remove("dragging");
+});
+
+/* ===== 드래그 후 클릭 방지 ===== */
+scroll.addEventListener("click", e => {
+  if (moved) {
+    e.preventDefault();
+    e.stopPropagation();
+    moved = false;
+  }
+}, true);
+
+/* ===== 드래그바 클릭 → 즉시 점프 ===== */
+track.addEventListener("mousedown", e => {
+  const rect = track.getBoundingClientRect();
+  const x = e.pageX - rect.left;
+  const maxX = track.clientWidth - thumb.clientWidth;
+  const pos = Math.max(0, Math.min(maxX, x - thumb.clientWidth / 2));
+
+  const ratio = pos / maxX;
+  const maxScroll = scroll.scrollWidth - scroll.clientWidth;
+
+  scroll.scrollLeft = ratio * maxScroll;
+  syncThumb();
+});
+
+/* ===== 스크롤 → 드래그바 ===== */
+function syncThumb() {
+  const maxScroll = scroll.scrollWidth - scroll.clientWidth;
+  if (maxScroll <= 0) return;
+
+  const ratio = scroll.scrollLeft / maxScroll;
+  const maxX = track.clientWidth - thumb.clientWidth;
+  thumb.style.left = (ratio * maxX) + "px";
+}
+
+scroll.addEventListener("scroll", syncThumb);
+</script>
+
+</body>
+</html>

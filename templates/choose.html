@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>강 선택</title>
+
+<style>
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #0b0b0b;
+  color: #fff;
+  font-family: Pretendard, Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box {
+  background: #141414;
+  padding: 48px 56px;
+  border-radius: 26px;
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+}
+
+h1 {
+  margin: 0 0 12px;
+  font-size: 26px;
+}
+
+p {
+  color: #aaa;
+  margin-bottom: 32px;
+}
+
+.levels {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px,1fr));
+  gap: 16px;
+}
+
+button {
+  background: #fff;
+  color: #111;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 0;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .12s ease;
+}
+
+button:hover { transform: translateY(-2px); }
+button:active { transform: scale(0.95); }
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h1>몇 강으로 할까요?</h1>
+  <p>총 {{ count }}곡</p>
+
+  <form method="post" action="/choose">
+    <div class="levels">
+      {% for o in options %}
+        <button type="submit" name="size" value="{{ o }}">
+          {{ o }}강
+        </button>
+      {% endfor %}
+    </div>
+  </form>
+</div>
+
+</body>
+</html>
