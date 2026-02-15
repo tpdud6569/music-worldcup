@@ -13,38 +13,53 @@ templates = Jinja2Templates(directory="templates")
 # =====================
 # OAuth 설정
 # =====================
+from google_auth_oauthlib.flow import Flow
+from fastapi import Request
 import os
 
 CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 
+SCOPES = [
+    "openid",
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/youtube.readonly",
+]
 
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+def make_flow(request: Request) -> Flow:
+    # FastAPI가 계산한 콜백 URL
+    redirect_uri = str(request.url_for("auth"))
 
-import os
+    # Render 같은 프록시 환경에서 scheme이 http로 잡힐 수 있어서 보정
+    proto = request.headers.get("x-forwarded-proto")
+    if proto == "https":
+        redirect_uri = redirect_uri.replace("http://", "https://", 1)
 
-REDIRECT_URI = (
-    "https://music-worldcup.onrender.com/auth"
-    if os.getenv("RENDER") == "true"
-    else "http://localhost:8000/auth"
-)
+    return Flow.from_client_config(
+        {
+            "web": {
+                "client_id": CLIENT_ID,
+                "client_secret": CLIENT_SECRET,
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+            }
+        },
+        scopes=SCOPES,
+        redirect_uri=redirect_uri,
+    )
 
-flow = Flow.from_client_config(
-    {
-        "web": {
-            "client_id": CLIENT_ID,
-            "client_secret": CLIENT_SECRET,
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token",
-        }
-    },
-    scopes=[
-        "openid",
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/youtube.readonly",
-    ],
-    redirect_uri=REDIRECT_URI,
-)
+@app.get("/login")
+def login(request: Request):
+    flow = make_flow(request)
+    url, _ = flow.authorization_url(prompt="consent")
+    return RedirectResponse(url)
+
+@app.get("/auth", name="auth")
+def auth(request: Request):
+    flow = make_flow(request)
+    flow.fetch_token(authorization_response=str(request.url))
+    store["creds"] = flow.credentials
+    return RedirectResponse("/playlists")
 
 
 # =====================
