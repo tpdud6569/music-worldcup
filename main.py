@@ -21,6 +21,14 @@ CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
+import os
+
+REDIRECT_URI = (
+    "https://music-worldcup.onrender.com/auth"
+    if os.getenv("RENDER") == "true"
+    else "http://localhost:8000/auth"
+)
+
 flow = Flow.from_client_config(
     {
         "web": {
@@ -35,8 +43,9 @@ flow = Flow.from_client_config(
         "https://www.googleapis.com/auth/userinfo.email",
         "https://www.googleapis.com/auth/youtube.readonly",
     ],
-    redirect_uri="http://localhost:8000/auth",
+    redirect_uri=REDIRECT_URI,
 )
+
 
 # =====================
 # 단일 사용자 저장소
