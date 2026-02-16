@@ -1,85 +1,118 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Music Worldcup</title>
 
-  <!-- Google Search Console site verification -->
+  <!-- Google site verification -->
   <meta name="google-site-verification"
         content="o6HOMiSwDo_sKgHpxEmLCBW3GYI0J8nUpDlDq9iCWRk" />
 
   <style>
-    body {
+    html, body {
       margin: 0;
-      min-height: 100vh;
+      padding: 0;
+      width: 100%;
+      height: 100%;
       background: #0b0b0b;
-      color: #fff;
-      font-family: Pretendard, Arial, sans-serif;
+      color: #ffffff;
+      font-family: Pretendard, -apple-system, BlinkMacSystemFont,
+                   "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
+    }
+
+    .container {
+      min-height: 100vh;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
-      padding-bottom: 60px;
+      align-items: center;
+      text-align: center;
+      padding: 40px 20px;
       box-sizing: border-box;
     }
-    .box {
-      width: min(560px, 92vw);
-      background: #111;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 18px;
-      padding: 28px;
-      text-align: center;
+
+    h1 {
+      font-size: 42px;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
     }
-    h1 { margin: 0 0 14px; font-size: 28px; }
-    .desc { color: rgba(255,255,255,.85); margin-bottom: 22px; }
+
+    .subtitle {
+      font-size: 16px;
+      opacity: 0.75;
+      max-width: 480px;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
     .login-btn {
       display: inline-block;
-      padding: 14px 20px;
-      border-radius: 14px;
-      background: #fff;
-      color: #000;
-      text-decoration: none;
+      padding: 18px 42px;
+      border-radius: 999px;
+      background: #ffffff;
+      color: #000000;
+      font-size: 18px;
       font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255,255,255,0.25);
+    }
+
+    .login-btn:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
     footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #0b0b0b;
-      border-top: 1px solid rgba(255,255,255,.2);
-      text-align: center;
-      padding: 12px 0;
+      margin-top: 48px;
       font-size: 14px;
+      opacity: 0.7;
     }
+
     footer a {
-      color: #fff;
+      color: #ffffff;
       text-decoration: underline;
-      margin: 0 10px;
+      margin: 0 8px;
+    }
+
+    footer a:hover {
+      opacity: 0.9;
     }
   </style>
 </head>
 
 <body>
-  <div class="box">
+
+  <div class="container">
     <h1>Music Worldcup</h1>
-    <div class="desc">
-      Google 로그인 후<br>
-      플레이리스트 또는 좋아요 표시한 음악으로<br>
-      음악 이상형 월드컵을 진행합니다.
-    </div>
-    <a class="login-btn" href="/login">Google 로그인</a>
+
+    <p class="subtitle">
+      유튜브 플레이리스트 또는<br>
+      좋아요 표시한 음악으로<br>
+      음악 이상형 월드컵을 진행하세요.
+    </p>
+
+    <a href="/login" class="login-btn">
+      Google 계정으로 시작하기
+    </a>
+
+    <!-- ⚠️ Google OAuth 자동검사 핵심 영역 -->
+    <footer>
+      <a href="https://music-worldcup.onrender.com/privacy">
+        개인정보처리방침
+      </a>
+      |
+      <a href="https://music-worldcup.onrender.com/terms">
+        서비스 이용약관
+      </a>
+    </footer>
   </div>
 
-  <!-- OAuth bot-visible footer -->
-  <footer>
-    <a href="https://music-worldcup.onrender.com/privacy">
-      개인정보처리방침
-    </a>
-    |
-    <a href="https://music-worldcup.onrender.com/terms">
-      서비스 이용약관
-    </a>
-  </footer>
 </body>
 </html>
