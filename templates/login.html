@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-
   <title>Music Worldcup</title>
 
   <!-- Google Search Console site verification -->
@@ -15,66 +14,48 @@
       margin: 0;
       min-height: 100vh;
       background: #0b0b0b;
-      color: #ffffff;
+      color: #fff;
       font-family: Pretendard, Arial, sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding-bottom: 60px;
+      box-sizing: border-box;
     }
-
     .box {
       width: min(560px, 92vw);
       background: #111;
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,.12);
       border-radius: 18px;
       padding: 28px;
-      box-sizing: border-box;
       text-align: center;
     }
-
-    h1 {
-      margin: 0 0 14px;
-      font-size: 28px;
-      font-weight: 800;
-    }
-
-    .desc {
-      color: rgba(255,255,255,0.85);
-      line-height: 1.5;
-      margin-bottom: 22px;
-    }
-
+    h1 { margin: 0 0 14px; font-size: 28px; }
+    .desc { color: rgba(255,255,255,.85); margin-bottom: 22px; }
     .login-btn {
       display: inline-block;
       padding: 14px 20px;
       border-radius: 14px;
-      background: #ffffff;
-      color: #000000;
+      background: #fff;
+      color: #000;
       text-decoration: none;
       font-weight: 700;
-      font-size: 16px;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-
-    .login-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-    }
-
-    .links {
-      margin-top: 18px;
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #0b0b0b;
+      border-top: 1px solid rgba(255,255,255,.2);
+      text-align: center;
+      padding: 12px 0;
       font-size: 14px;
-      color: rgba(255,255,255,0.7);
     }
-
-    .links a {
-      color: rgba(255,255,255,0.85);
-      text-decoration: none;
-      margin: 0 4px;
-    }
-
-    .links a:hover {
+    footer a {
+      color: #fff;
       text-decoration: underline;
+      margin: 0 10px;
     }
   </style>
 </head>
@@ -82,38 +63,23 @@
 <body>
   <div class="box">
     <h1>Music Worldcup</h1>
-
     <div class="desc">
       Google 로그인 후<br>
       플레이리스트 또는 좋아요 표시한 음악으로<br>
       음악 이상형 월드컵을 진행합니다.
     </div>
-
     <a class="login-btn" href="/login">Google 로그인</a>
-
-    <div class="links">
-      <a href="/privacy">개인정보처리방침</a> ·
-      <a href="/terms">서비스 이용약관</a>
-    </div>
   </div>
-  <footer style="
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 12px 0;
-  background: #0b0b0b;
-  text-align: center;
-  font-size: 14px;
-  border-top: 1px solid rgba(255,255,255,0.15);
-">
-  <a href="/privacy" style="color:#fff;text-decoration:none;margin:0 8px;">
-    개인정보처리방침
-  </a>
-  |
-  <a href="/terms" style="color:#fff;text-decoration:none;margin:0 8px;">
-    서비스 이용약관
-  </a>
-</footer>
+
+  <!-- OAuth bot-visible footer -->
+  <footer>
+    <a href="https://music-worldcup.onrender.com/privacy">
+      개인정보처리방침
+    </a>
+    |
+    <a href="https://music-worldcup.onrender.com/terms">
+      서비스 이용약관
+    </a>
+  </footer>
 </body>
 </html>
