@@ -296,3 +296,10 @@ def worldcup(request: Request):
             "videos": store.get("worldcup", [])
         }
     )
+@app.get("/privacy", response_class=HTMLResponse)
+def privacy(request: Request):
+    return templates.TemplateResponse("privacy.html", {"request": request})
+
+@app.get("/terms", response_class=HTMLResponse)
+def terms(request: Request):
+    return templates.TemplateResponse("terms.html", {"request": request})
