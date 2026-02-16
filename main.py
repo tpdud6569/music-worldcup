@@ -106,7 +106,7 @@ def available_levels(n):
 # =====================
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse("home.html", {"request": request})
 
 
 @app.get("/login")
